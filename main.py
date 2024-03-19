@@ -168,7 +168,7 @@ def calculate_shift(start_letter: str, end_letter: str) -> int:
 def main():
     print("=" * 70 + " FIRST STEP [KEY LENGTH] " + "=" * 70)
     # Reading the encrypted text file.
-    file_path = "portuguese.txt"
+    file_path = "english.txt"
     file_reader = open(file_path, "r")
     encrypted_text = file_reader.read()
     file_reader.close()
@@ -187,13 +187,13 @@ def main():
 
         # Check if the coincidence index is close to the English coincidence index.
         # If so, the length of the key is likely found.
-        if coincidence_indexes_match(coincidence_indexes, PORTUGUESE_COINCIDENCE_INDEX):
+        if coincidence_indexes_match(coincidence_indexes, ENGLISH_COINCIDENCE_INDEX):
             key_length = i
             print(
-                f"=> For Key Length = {i}, Coincidence Indexes = {pretty_print_float_array(coincidence_indexes)} It's a match! The key length is likely {i}.")
+                f"=> For Key Length = {i}, Coincidence Indexes = {pretty_print_float_array(coincidence_indexes)} [MATCHED].")
             break
         print(
-            f"=> For Key Length = {i}, Coincidence Indexes = {pretty_print_float_array(coincidence_indexes)} Hmmm... not quite it. Let's try another key length.")
+            f"=> For Key Length = {i}, Coincidence Indexes = {pretty_print_float_array(coincidence_indexes)} [NO MATCH]")
 
     print("=" * 70 + " SECOND STEP [KEY PASSWORD] " + "=" * 68)
 
@@ -203,7 +203,7 @@ def main():
     for i, text in enumerate(sub_texts):
         letters_map = get_letters_map(text)
         most_frequent_letter = max(letters_map, key=letters_map.get)
-        shift = calculate_shift(PORTUGUESE_MOST_FREQUENT_LETTER, most_frequent_letter)
+        shift = calculate_shift(ENGLISH_MOST_FREQUENT_LETTER, most_frequent_letter)
         key_letter = letter_in_alphabet(shift)
         key_password += key_letter
         print(f"=> For Sub-Text {i + 1}, Most Frequent Letter = {most_frequent_letter}, Shift = {shift}")
