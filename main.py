@@ -7,6 +7,20 @@ ENGLISH_MOST_FREQUENT_LETTER = "e"
 PORTUGUESE_MOST_FREQUENT_LETTER = "a"
 
 
+# Function to pretty print a list of floats.
+def pretty_print_float_array(array: list[float]) -> str:
+    """
+    Pretty print a list of floats.
+
+    Args:
+        array (list[float]): The list of floats.
+
+    Returns:
+        str: The pretty printed list of floats.
+    """
+    return "[" + ", ".join([f"{x:.3f}" for x in array]) + "]"
+
+
 # Function to generate a dictionary mapping each letter to its frequency in the encrypted text.
 def get_letters_map(encrypted_text: str) -> dict[str, int]:
     """
@@ -98,7 +112,7 @@ def coincidence_indexes_match(coincidence_indexes: list[float], target_index: fl
         bool: True if all coincidence indexes are close to the target index, False otherwise.
     """
     for index in coincidence_indexes:
-        if abs(index - target_index) > 0.01:
+        if abs(index - target_index) > 0.005:
             return False
     return True
 
@@ -152,6 +166,7 @@ def calculate_shift(start_letter: str, end_letter: str) -> int:
 
 # Main function.
 def main():
+    print("=" * 70 + " FIRST STEP [KEY LENGTH] " + "=" * 70)
     # Reading the encrypted text file.
     file_path = "portuguese.txt"
     file_reader = open(file_path, "r")
@@ -175,12 +190,12 @@ def main():
         if coincidence_indexes_match(coincidence_indexes, PORTUGUESE_COINCIDENCE_INDEX):
             key_length = i
             print(
-                f"For Key Length = {i}, Coincidence Indexes = {coincidence_indexes} It's a match! The key length is likely {i}.")
+                f"=> For Key Length = {i}, Coincidence Indexes = {pretty_print_float_array(coincidence_indexes)} It's a match! The key length is likely {i}.")
             break
         print(
-            f"For Key Length = {i}, Coincidence Indexes = {coincidence_indexes} Hmmm... not quite it. Let's try another key length.")
+            f"=> For Key Length = {i}, Coincidence Indexes = {pretty_print_float_array(coincidence_indexes)} Hmmm... not quite it. Let's try another key length.")
 
-    print("=" * 70)
+    print("=" * 70 + " SECOND STEP [KEY PASSWORD] " + "=" * 68)
 
     # Iterate over each sub-text and find the most frequent letter to decrypt the text.
     key_password = ""
@@ -191,7 +206,7 @@ def main():
         shift = calculate_shift(PORTUGUESE_MOST_FREQUENT_LETTER, most_frequent_letter)
         key_letter = letter_in_alphabet(shift)
         key_password += key_letter
-        print(f"For Sub-Text {i + 1}, Most Frequent Letter = {most_frequent_letter}, Shift = {shift}")
+        print(f"=> For Sub-Text {i + 1}, Most Frequent Letter = {most_frequent_letter}, Shift = {shift}")
 
         # Decrypt the sub-text using the key letter.
         decrypted_text = ""
@@ -199,8 +214,7 @@ def main():
             correct_letter_position = calculate_shift(key_letter, letter)
             decrypted_text += letter_in_alphabet(correct_letter_position)
         decrypted_texts.append(decrypted_text)
-            
-    print(f"The key password is: {key_password}")
+    print(f"=> The key password is: {key_password}")
 
     # Join the decrypted sub-texts into a single text.
     decrypted_text = join_text(decrypted_texts, key_length)
@@ -209,7 +223,8 @@ def main():
     file_writer = open("decrypted.txt", "w")
     file_writer.write(decrypted_text)
     file_writer.close()
-
+    print("=" * 166)
+    print(f"=> The decrypted text has been saved to 'decrypted.txt'.")
 
 
 # Entry point of the program.
