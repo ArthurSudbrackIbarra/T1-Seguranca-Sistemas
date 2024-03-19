@@ -48,6 +48,8 @@ def is_text_portuguese(letters_map: dict[str, int]) -> bool:
     most_frequent_letter = sorted_letters_map[0][0]
     second_most_frequent_letter = sorted_letters_map[1][0]
 
+    print(abs(letters_map[most_frequent_letter] / total_letters - 0.1463))
+
     # Portuguese A letter is the most frequent letter and it has 14.63% frequency.
     # Portuguese E letter is the second most frequent letter and it has 12.57% frequency.
     # Check if the most frequent letter is close to the Portuguese A letter.
@@ -161,7 +163,7 @@ def coincidence_indexes_match(coincidence_indexes: list[float], target_index: fl
         bool: True if all coincidence indexes are close to the target index, False otherwise.
     """
     for index in coincidence_indexes:
-        if abs(index - target_index) > 0.005:
+        if abs(index - target_index) > 0.1:
             return False
     return True
 
@@ -217,7 +219,7 @@ def calculate_shift(start_letter: str, end_letter: str) -> int:
 def main():
     print("=" * 70 + " FIRST STEP [KEY LENGTH] " + "=" * 70)
     # Reading the encrypted text file.
-    file_path = "portuguese.txt"
+    file_path = "encrypted/cipher30.txt"
     file_reader = open(file_path, "r")
     encrypted_text = file_reader.read()
     file_reader.close()
