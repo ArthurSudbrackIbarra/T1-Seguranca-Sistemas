@@ -131,6 +131,25 @@ def letter_in_alphabet(position: int) -> str:
     return chr(position + ord("a") - 1)
 
 
+# Function to calculate the shift needed to go from start_letter to end_letter.
+def calculate_shift(start_letter: str, end_letter: str) -> int:
+    """
+    Calculate the shift needed to go from start_letter to end_letter.
+
+    Args:
+        start_letter (str): The start letter.
+        end_letter (str): The end letter.
+
+    Returns:
+        int: The shift needed to go from start_letter to end_letter.
+    """
+    position_1 = position_in_alphabet(start_letter)
+    position_2 = position_in_alphabet(end_letter)
+    if position_2 >= position_1:
+        return position_2 - position_1 + 1
+    return 26 - position_1 + position_2 + 1
+    
+
 # Main function.
 def main():
     # Reading the encrypted text file.
@@ -161,15 +180,36 @@ def main():
         print(
             f"For Key Length = {i}, Coincidence Indexes = {coincidence_indexes} Hmmm... not quite it. Let's try another key length.")
 
-    # Now that we have the key length and the sub-texts, we can try to decrypt the text.
-    print()
+    print("=" * 70)
+
+    # Iterate over each sub-text and find the most frequent letter to decrypt the text.
+    key_password = ""
     decrypted_texts = []
     for i, text in enumerate(sub_texts):
         letters_map = get_letters_map(text)
         most_frequent_letter = max(letters_map, key=letters_map.get)
+        shift = calculate_shift(PORTUGUESE_MOST_FREQUENT_LETTER, most_frequent_letter)
+        key_letter = letter_in_alphabet(shift)
+        key_password += key_letter
+        print(f"For Sub-Text {i + 1}, Most Frequent Letter = {most_frequent_letter}, Shift = {shift}")
 
-        # Se sabemos que a letra mais frequente no português equivale a 'most_frequent_letter', então
-        # podemos calcular a chave para descriptografar o texto.
+        # Decrypt the sub-text using the key letter.
+        decrypted_text = ""
+        for letter in text:
+            correct_letter_position = calculate_shift(key_letter, letter)
+            decrypted_text += letter_in_alphabet(correct_letter_position)
+        decrypted_texts.append(decrypted_text)
+            
+    print(f"The key password is: {key_password}")
+
+    # Join the decrypted sub-texts into a single text.
+    decrypted_text = join_text(decrypted_texts, key_length)
+    
+    # Save the decrypted text to a file.
+    file_writer = open("decrypted.txt", "w")
+    file_writer.write(decrypted_text)
+    file_writer.close()
+
 
 
 # Entry point of the program.
