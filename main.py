@@ -239,6 +239,8 @@ def main():
             letters_map = get_letters_map(text)  
             coincidence_index = calculate_coincidence_index(letters_map)
             coincidence_indexes.append(coincidence_index)
+
+            # ! This is totally wrong, only the last sub-text is being checked.
             is_english = is_text_english(letters_map)
             is_portuguese = is_text_portuguese(letters_map)
 
