@@ -1,5 +1,6 @@
-# Constant representing the typical index of coincidence for English text.
-ENGLISH_COINCIDENCE_INDEX = 0.067
+# Constant representing the typical index of coincidence for English and Portuguese texts.
+ENGLISH_COINCIDENCE_INDEX = 0.066
+PORTUGUESE_COINCIDENCE_INDEX = 0.074
 
 
 # Function to generate a dictionary mapping each letter to its frequency in the encrypted text.
@@ -54,9 +55,9 @@ def divide_text(encrypted_text: str, number_of_parts: int) -> list[str]:
     Returns:
         list[str]: A list containing the divided parts of the text.
     """
-    divided_text = [""] * number_of_parts
-    for i in range(len(encrypted_text)):
-        divided_text[i % number_of_parts] += encrypted_text[i]
+    divided_text = []
+    for i in range(number_of_parts):
+        divided_text.append(encrypted_text[i::number_of_parts])
     return divided_text
 
 
