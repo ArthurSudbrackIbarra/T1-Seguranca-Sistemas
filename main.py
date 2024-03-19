@@ -2,6 +2,10 @@
 ENGLISH_COINCIDENCE_INDEX = 0.066
 PORTUGUESE_COINCIDENCE_INDEX = 0.074
 
+# Constant representing the most frequent letter in English and Portuguese texts.
+ENGLISH_MOST_FREQUENT_LETTER = "e"
+PORTUGUESE_MOST_FREQUENT_LETTER = "a"
+
 
 # Function to generate a dictionary mapping each letter to its frequency in the encrypted text.
 def get_letters_map(encrypted_text: str) -> dict[str, int]:
@@ -61,6 +65,26 @@ def divide_text(encrypted_text: str, number_of_parts: int) -> list[str]:
     return divided_text
 
 
+# Function to join the divided text back into a single text.
+def join_text(divided_text: list[str], number_of_parts: int) -> str:
+    """
+    Join the divided text back into a single text.
+
+    Args:
+        divided_text (list[str]): A list containing the divided parts of the text.
+        number_of_parts (int): The number of parts to divide the text into.
+
+    Returns:
+        str: The joined text.
+    """
+    joined_text = ""
+    for i in range(len(divided_text[0])):
+        for j in range(number_of_parts):
+            if i < len(divided_text[j]):
+                joined_text += divided_text[j][i]
+    return joined_text
+
+
 # Function to check if all coincidence indexes match the target index.
 def coincidence_indexes_match(coincidence_indexes: list[float], target_index: float) -> bool:
     """
@@ -79,22 +103,50 @@ def coincidence_indexes_match(coincidence_indexes: list[float], target_index: fl
     return True
 
 
+# Function to get the position of a letter in the alphabet.
+def position_in_alphabet(letter: str) -> int:
+    """
+    Get the position of a letter in the alphabet.
+
+    Args:
+        letter (str): The letter.
+
+    Returns:
+        int: The position of the letter in the alphabet.
+    """
+    return ord(letter) - ord("a") + 1
+
+
+# Function to get the letter at a given position in the alphabet.
+def letter_in_alphabet(position: int) -> str:
+    """
+    Get the letter at a given position in the alphabet.
+
+    Args:
+        position (int): The position of the letter in the alphabet.
+
+    Returns:
+        str: The letter at the given position in the alphabet.
+    """
+    return chr(position + ord("a") - 1)
+
+
 # Main function.
 def main():
     # Reading the encrypted text file.
-    file_path = "encrypted/cipher10.txt"
+    file_path = "portuguese.txt"
     file_reader = open(file_path, "r")
     encrypted_text = file_reader.read()
     file_reader.close()
 
-    # Try different key lengths from 1 to 15.
+    # Try different key lengths from 1 to 20.
     key_length = 0
     sub_texts = []
-    for i in range(1, 16):
-        new_texts = divide_text(encrypted_text, i)
+    for i in range(1, 21):
+        sub_texts = divide_text(encrypted_text, i)
         coincidence_indexes = []
         # Calculate the index of coincidence for each divided text.
-        for text in new_texts:
+        for text in sub_texts:
             letters_map = get_letters_map(text)
             coincidence_index = calculate_coincidence_index(letters_map)
             coincidence_indexes.append(coincidence_index)
@@ -103,14 +155,21 @@ def main():
         # If so, the length of the key is likely found.
         if coincidence_indexes_match(coincidence_indexes, PORTUGUESE_COINCIDENCE_INDEX):
             key_length = i
-            sub_texts = new_texts
             print(
-                f"For Key Length = {i}, Coincidence Indexes = {coincidence_indexes} It's a match! The key length is likely {i}.\n")
+                f"For Key Length = {i}, Coincidence Indexes = {coincidence_indexes} It's a match! The key length is likely {i}.")
             break
         print(
-            f"For Key Length = {i}, Coincidence Indexes = {coincidence_indexes} Hmmm... not quite it. Let's try another key length.\n")
+            f"For Key Length = {i}, Coincidence Indexes = {coincidence_indexes} Hmmm... not quite it. Let's try another key length.")
 
-    # Now that we have the key length, we can try to decrypt the text using the Vigenere cipher.
+    # Now that we have the key length and the sub-texts, we can try to decrypt the text.
+    print()
+    decrypted_texts = []
+    for i, text in enumerate(sub_texts):
+        letters_map = get_letters_map(text)
+        most_frequent_letter = max(letters_map, key=letters_map.get)
+
+        # Se sabemos que a letra mais frequente no português equivale a 'most_frequent_letter', então
+        # podemos calcular a chave para descriptografar o texto.
 
 
 # Entry point of the program.
