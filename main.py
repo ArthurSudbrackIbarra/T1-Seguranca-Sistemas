@@ -79,10 +79,10 @@ def coincidence_indexes_match(coincidence_indexes: list[float], target_index: fl
     return True
 
 
-# Main function to analyze the encrypted text and determine the likely key length.
+# Main function.
 def main():
     # Reading the encrypted text file.
-    file_path = "english.txt"
+    file_path = "encrypted/cipher10.txt"
     file_reader = open(file_path, "r")
     encrypted_text = file_reader.read()
     file_reader.close()
@@ -101,7 +101,7 @@ def main():
 
         # Check if the coincidence index is close to the English coincidence index.
         # If so, the length of the key is likely found.
-        if coincidence_indexes_match(coincidence_indexes, ENGLISH_COINCIDENCE_INDEX):
+        if coincidence_indexes_match(coincidence_indexes, PORTUGUESE_COINCIDENCE_INDEX):
             key_length = i
             sub_texts = new_texts
             print(
@@ -110,8 +110,7 @@ def main():
         print(
             f"For Key Length = {i}, Coincidence Indexes = {coincidence_indexes} Hmmm... not quite it. Let's try another key length.\n")
 
-    # Here we have the key length and the divided texts.
-    print(f"The length of the key is {key_length}.")
+    # Now that we have the key length, we can try to decrypt the text using the Vigenere cipher.
 
 
 # Entry point of the program.
