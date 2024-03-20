@@ -298,7 +298,7 @@ def main():
             language = "PORTUGUESE"
             print(
                 f"=> For Key Length = {i}, Coincidence Indexes = {pretty_print_float_array(coincidence_indexes)} [MATCHED]")
-            print(f"=> The key length is likely {key_length}")
+            print(f"\n=> The key length is likely {key_length}")
             print(f"=> The text was likely written in Portuguese")
             break
         print(
@@ -330,11 +330,11 @@ def main():
     possible_passwords = string_combinations(
         password_by_shifting_all_by_most_frequent_letter, password_by_shifting_all_by_second_most_frequent_letter)
     possible_passwords.reverse()
-    print(f"=> We are assuming that the most frequent letter in each sub-text is either the first or the second most frequent letter in the {str.lower(language)} language")
-    print(f"==> Key password assuming that all sub-texts most frequent letters are mapped to '{language_most_frequent_letters[0]}': '{password_by_shifting_all_by_most_frequent_letter}'")
-    print(f"==> Key password assuming that all sub-texts most frequent letters are mapped to '{language_most_frequent_letters[1]}': '{password_by_shifting_all_by_second_most_frequent_letter}'")
+    print(f"\n=> We are assuming that the most frequent letter in each sub-text is either the first or the second most frequent letter in the {str.lower(language)} language")
+    print(f"==> Assuming that the most frequent letter in all sub-texts is mapped to '{language_most_frequent_letters[0]}', the key password would be: '{password_by_shifting_all_by_most_frequent_letter}'")
+    print(f"==> Assuming that the second most frequent letter in all sub-texts is mapped to '{language_most_frequent_letters[1]}', the key password would be: '{password_by_shifting_all_by_second_most_frequent_letter}'")
     print(f"==> By permutating these two key passwords, we get a total of {len(possible_passwords)} possible key passwords")
-    print(f"==> The possible key passwords are: {possible_passwords}")
+    print(f"\n==> The possible key passwords are: {possible_passwords}")
 
     # Decrypt the text using the possible key passwords.
     # Save each decrypted text to a file.
@@ -353,7 +353,7 @@ def main():
         file_writer.close()
         print(f"=> Decrypted text using key password '{password}' saved to '{save_path}'")
     print("=> All possible decrypted texts saved to the 'decrypted' folder")
-    print("=" * 70 + " END " + "=" * 85)
+    print("=" * 70 + " END " + "=" * 92)
 
 # Entry point of the program.
 if __name__ == "__main__":
