@@ -1,4 +1,5 @@
 import os
+from itertools import product
 
 # Constant representing the typical index of coincidence for English and Portuguese texts.
 ENGLISH_COINCIDENCE_INDEX = 0.066
@@ -55,7 +56,7 @@ def is_text_portuguese(letters_map: dict[str, int]) -> bool:
     most_frequent_letter = sorted_letters_map[0][0]
     second_most_frequent_letter = sorted_letters_map[1][0]
 
-    if abs(letters_map[most_frequent_letter] / total_letters - 0.1463) < 0.01 and abs(letters_map[second_most_frequent_letter] / total_letters - 0.1257) < 0.01:
+    if abs(letters_map[most_frequent_letter] / total_letters - 0.1463) < 0.03 and abs(letters_map[second_most_frequent_letter] / total_letters - 0.1257) < 0.03:
         return True
 
 
@@ -227,6 +228,30 @@ def calculate_shift(start_letter: str, end_letter: str) -> int:
     return 26 - position_1 + position_2 + 1
 
 
+# Function to generate all possible combinations of characters by choosing letters from either string.
+def string_combinations(str1: str, str2: str) -> list:
+    """
+    Generate all possible combinations of characters by choosing letters from either string.
+
+    Args:
+        str1 (str): The first string.
+        str2 (str): The second string.
+
+    Returns:
+        list: A list of all possible combinations of characters.
+    """
+    def generate_combinations(str1: str, str2: str, index: int, current: list):
+        if index == len(str1):
+            combinations.append(''.join(current))
+            return
+        generate_combinations(str1, str2, index + 1, current + [str1[index]])
+        generate_combinations(str1, str2, index + 1, current + [str2[index]])
+
+    combinations = []
+    generate_combinations(str1, str2, 0, [])
+    return combinations
+
+
 # Main function.
 def main():
     print("=" * 70 + " FIRST STEP [KEY LENGTH] " + "=" * 70)
@@ -281,9 +306,8 @@ def main():
     print("=" * 70 + " SECOND STEP [KEY PASSWORD] " + "=" * 68)
 
     # Iterate over each sub-text and find the most frequent letter to decrypt the text.
-    possible_key_passwords = ["", ""]
-    decrypted_texts_1 = []
-    decrypted_texts_2 = []
+    password_by_shifting_all_by_most_frequent_letter = ""
+    password_by_shifting_all_by_second_most_frequent_letter = ""
     for i, text in enumerate(sub_texts):
         letters_map = get_letters_map(text)
         text_most_frequent_letter = max(letters_map, key=letters_map.get)
@@ -296,44 +320,32 @@ def main():
             language_most_frequent_letters[1], text_most_frequent_letter)
         key_1_letter = letter_in_alphabet(shift_1)
         key_2_letter = letter_in_alphabet(shift_2)
-        possible_key_passwords[0] += key_1_letter
-        possible_key_passwords[1] += key_2_letter
+        password_by_shifting_all_by_most_frequent_letter += key_1_letter
+        password_by_shifting_all_by_second_most_frequent_letter += key_2_letter
         print(
             f"=> For Sub-Text {i + 1}, Most Frequent Letter = {text_most_frequent_letter}, Shift = {shift_1} or {shift_2}")
 
-        # Decrypt the sub-text using the key letters.
-        decrypted_text = ""
-        for letter in text:
-            correct_letter_position = calculate_shift(key_1_letter, letter)
-            decrypted_text += letter_in_alphabet(correct_letter_position)
-        decrypted_texts_1.append(decrypted_text)
+    # Generate all possible key passwords by combining the letters obtained from the shifts.
+    possible_passwords = string_combinations(
+        password_by_shifting_all_by_most_frequent_letter, password_by_shifting_all_by_second_most_frequent_letter)
+    possible_passwords.reverse()
+    print(f"=> The key password is likely to be one of the following: {possible_passwords}")
 
-        decrypted_text = ""
-        for letter in text:
-            correct_letter_position = calculate_shift(key_2_letter, letter)
-            decrypted_text += letter_in_alphabet(correct_letter_position)
-        decrypted_texts_2.append(decrypted_text)
-    print(f"=> The key password could be '{possible_key_passwords[0]}' or '{possible_key_passwords[1]}'")
-
-    # Join the decrypted sub-texts into a single text.
-    decrypted_text_1 = join_text(decrypted_texts_1, key_length)
-    decrypted_text_2 = join_text(decrypted_texts_2, key_length)
-
-    # Save the decrypted texts to a file.
-    # If folder 'decrypted' does not exist, create it.
+    # Decrypt the text using the possible key passwords.
+    # Save each decrypted text to a file.
+    print("=" * 70 + " THIRD STEP [DECRYPTED TEXT] " + "=" * 68)
     if not os.path.exists("decrypted"):
         os.makedirs("decrypted")
-    
-    file_writer = open("decrypted/decrypted_1.txt", "w")
-    file_writer.write(decrypted_text_1)
-    file_writer.close()
-    file_writer = open("decrypted/decrypted_2.txt", "w")
-    file_writer.write(decrypted_text_2)
-    file_writer.close()
-    print("=" * 166)
-    print(f"=> The decrypted texts have been saved to the 'decrypted' folder")
-    print(f"=> The file 'decrypted_1.txt' contains the decrypted text using the key '{possible_key_passwords[0]}'")
-    print(f"=> The file 'decrypted_2.txt' contains the decrypted text using the key '{possible_key_passwords[1]}'")
+    for password in possible_passwords:
+        decrypted_text = ""
+        for i, letter in enumerate(encrypted_text):
+            shift = calculate_shift(password[i % key_length], letter)
+            decrypted_text += letter_in_alphabet(shift)
+        save_path = f"decrypted/{password}.txt"
+        file_writer = open(save_path, "w")
+        file_writer.write(decrypted_text)
+        file_writer.close()
+        print(f"=> Decrypted text using key password '{password}' saved to '{save_path}'")
 
 
 # Entry point of the program.
