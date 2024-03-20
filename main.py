@@ -329,7 +329,12 @@ def main():
     # Generate all possible key passwords by combining the letters obtained from the shifts.
     possible_passwords = string_combinations(
         password_by_shifting_all_by_most_frequent_letter, password_by_shifting_all_by_second_most_frequent_letter)
-    possible_passwords.reverse()
+    # Put first and last combinations in positions 0 and 1 respectively.
+    # This is because they are the most likely to be the correct key password.
+    if len(possible_passwords) > 2:
+        aux = possible_passwords[1]
+        possible_passwords[1] = possible_passwords[-1]
+        possible_passwords[-1] = aux
     print(f"\n=> We are assuming that the most frequent letter in each sub-text is either the first or the second most frequent letter in the {str.lower(language)} language")
     print(f"==> Assuming that the most frequent letter in all sub-texts is mapped to '{language_most_frequent_letters[0]}', the key password would be: '{password_by_shifting_all_by_most_frequent_letter}'")
     print(f"==> Assuming that the second most frequent letter in all sub-texts is mapped to '{language_most_frequent_letters[1]}', the key password would be: '{password_by_shifting_all_by_second_most_frequent_letter}'")
