@@ -1,16 +1,18 @@
+import os
+
 # Constant representing the typical index of coincidence for English and Portuguese texts.
 ENGLISH_COINCIDENCE_INDEX = 0.066
 PORTUGUESE_COINCIDENCE_INDEX = 0.074
 
-# Constant representing the most frequent letter in English and Portuguese texts.
-ENGLISH_MOST_FREQUENT_LETTER = "e"
-PORTUGUESE_MOST_FREQUENT_LETTER = "e"
+# Constant representing the most frequent letters in English and Portuguese texts.
+ENGLISH_MOST_FREQUENT_LETTERS = ["e", "t"]
+PORTUGUESE_MOST_FREQUENT_LETTERS = ["a", "e"]
 
 
-# Function to check if the text is likely english based on the frequency of the most frequent letters.
+# Function to check if the text is likely English based on the frequency of the most frequent letters.
 def is_text_english(letters_map: dict[str, int]) -> bool:
     """
-    Check if the text is likely to be English based on the frequency of the most frequent letter.
+    Check if the text is likely to be English based on the frequency of the most frequent letters.
 
     Args:
         letters_map (dict[str, int]): A dictionary with letters as keys and their frequencies as values.
@@ -18,25 +20,24 @@ def is_text_english(letters_map: dict[str, int]) -> bool:
     Returns:
         bool: True if the text is likely to be English, False otherwise.
     """
+    # Calculate the relative frequency of the most frequent and second most frequent letters.
+    # Compare these frequencies with typical values for English.
+    # If the frequencies are close to typical English values, return True.
+    # Otherwise, return False.
     total_letters = sum(letters_map.values())
     sorted_letters_map = sorted(
         letters_map.items(), key=lambda x: x[1], reverse=True)
     most_frequent_letter = sorted_letters_map[0][0]
     second_most_frequent_letter = sorted_letters_map[1][0]
 
-    # E letter is the most frequent letter and it has 12.7% frequency.
-    # T letter is the second most frequent letter and it has 9.05% frequency.
-    # Check if the most frequent letter is close to the E letter.
-    # Check if the second most frequent letter is close to the T letter.
-    # If so, the text is likely to be English.
     if abs(letters_map[most_frequent_letter] / total_letters - 0.127) < 0.01 and abs(letters_map[second_most_frequent_letter] / total_letters - 0.0905) < 0.01:
         return True
 
 
-# Function to check if the text is likely portuguese based on the frequency of the most frequent letters.
+# Function to check if the text is likely Portuguese based on the frequency of the most frequent letters.
 def is_text_portuguese(letters_map: dict[str, int]) -> bool:
     """
-    Check if the text is likely to be Portuguese based on the frequency of the most frequent letter.
+    Check if the text is likely to be Portuguese based on the frequency of the most frequent letters.
 
     Args:
         letters_map (dict[str, int]): A dictionary with letters as keys and their frequencies as values.
@@ -44,23 +45,16 @@ def is_text_portuguese(letters_map: dict[str, int]) -> bool:
     Returns:
         bool: True if the text is likely to be Portuguese, False otherwise.
     """
+    # Calculate the relative frequency of the most frequent and second most frequent letters.
+    # Compare these frequencies with typical values for Portuguese.
+    # If the frequencies are close to typical Portuguese values, return True.
+    # Otherwise, return False.
     total_letters = sum(letters_map.values())
     sorted_letters_map = sorted(
         letters_map.items(), key=lambda x: x[1], reverse=True)
     most_frequent_letter = sorted_letters_map[0][0]
     second_most_frequent_letter = sorted_letters_map[1][0]
 
-    # ! Remove later...
-    # print(abs(letters_map[most_frequent_letter] / total_letters - 0.1463))
-    # print(
-    #     abs(letters_map[second_most_frequent_letter] / total_letters - 0.1257))
-    # print()
-
-    # A letter is the most frequent letter and it has 14.63% frequency.
-    # E letter is the second most frequent letter and it has 12.57% frequency.
-    # Check if the most frequent letter is close to the A letter.
-    # Check if the second most frequent letter is close to the E letter.
-    # If so, the text is likely to be Portuguese.
     if abs(letters_map[most_frequent_letter] / total_letters - 0.1463) < 0.01 and abs(letters_map[second_most_frequent_letter] / total_letters - 0.1257) < 0.01:
         return True
 
@@ -76,6 +70,8 @@ def pretty_print_float_array(array: list[float]) -> str:
     Returns:
         str: The pretty printed list of floats.
     """
+    # Convert each float in the array to a string with 4 decimal places,
+    # then join them with commas and enclose in square brackets.
     return "[" + ", ".join([f"{x:.4f}" for x in array]) + "]"
 
 
@@ -90,6 +86,8 @@ def get_letters_map(encrypted_text: str) -> dict[str, int]:
     Returns:
         dict[str, int]: A dictionary with letters as keys and their frequencies as values.
     """
+    # Count the occurrences of each letter in the encrypted text
+    # and store them in a dictionary.
     letters_map = {}
     for letter in encrypted_text:
         if letter in letters_map:
@@ -110,6 +108,7 @@ def calculate_coincidence_index(letters_map: dict[str, int]) -> float:
     Returns:
         float: The index of coincidence.
     """
+    # Calculate the index of coincidence based on the frequencies of letters in the text.
     coincidence_index = 0
     total_letters = sum(letters_map.values())
     for letter in letters_map:
@@ -131,6 +130,7 @@ def divide_text(encrypted_text: str, number_of_parts: int) -> list[str]:
     Returns:
         list[str]: A list containing the divided parts of the text.
     """
+    # Divide the text into N parts by taking every Nth character.
     divided_text = []
     for i in range(number_of_parts):
         divided_text.append(encrypted_text[i::number_of_parts])
@@ -149,6 +149,7 @@ def join_text(divided_text: list[str], number_of_parts: int) -> str:
     Returns:
         str: The joined text.
     """
+    # Reconstruct the original text by taking characters from each part in order.
     joined_text = ""
     for i in range(len(divided_text[0])):
         for j in range(number_of_parts):
@@ -169,9 +170,10 @@ def coincidence_indexes_match(coincidence_indexes: list[float], target_index: fl
     Returns:
         bool: True if all coincidence indexes are close to the target index, False otherwise.
     """
+    # Check if all coincidence indexes are within a threshold of the target index.
     for index in coincidence_indexes:
         if abs(index - target_index) > 0.1:
-            return False
+                        return False
     return True
 
 
@@ -186,6 +188,7 @@ def position_in_alphabet(letter: str) -> int:
     Returns:
         int: The position of the letter in the alphabet.
     """
+    # Calculate the position of a letter in the alphabet based on its Unicode value.
     return ord(letter) - ord("a") + 1
 
 
@@ -200,6 +203,7 @@ def letter_in_alphabet(position: int) -> str:
     Returns:
         str: The letter at the given position in the alphabet.
     """
+    # Calculate the letter at a given position in the alphabet based on Unicode values.
     return chr(position + ord("a") - 1)
 
 
@@ -215,6 +219,7 @@ def calculate_shift(start_letter: str, end_letter: str) -> int:
     Returns:
         int: The shift needed to go from start_letter to end_letter.
     """
+    # Calculate the shift needed to transform one letter into another, considering the circular nature of the alphabet.
     position_1 = position_in_alphabet(start_letter)
     position_2 = position_in_alphabet(end_letter)
     if position_2 >= position_1:
@@ -227,7 +232,9 @@ def main():
     print("=" * 70 + " FIRST STEP [KEY LENGTH] " + "=" * 70)
 
     # Reading the encrypted text file.
-    file_path = "portuguese.txt"
+    file_path = "encrypted/" + input("Enter the name of the encrypted text file (inside the 'encrypted' folder): ")
+    if not file_path.endswith(".txt"):
+        file_path += ".txt"
     file_reader = open(file_path, "r")
     encrypted_text = file_reader.read()
     file_reader.close()
@@ -274,36 +281,59 @@ def main():
     print("=" * 70 + " SECOND STEP [KEY PASSWORD] " + "=" * 68)
 
     # Iterate over each sub-text and find the most frequent letter to decrypt the text.
-    key_password = ""
-    decrypted_texts = []
+    possible_key_passwords = ["", ""]
+    decrypted_texts_1 = []
+    decrypted_texts_2 = []
     for i, text in enumerate(sub_texts):
         letters_map = get_letters_map(text)
         text_most_frequent_letter = max(letters_map, key=letters_map.get)
-        language_most_frequent_letter = ENGLISH_MOST_FREQUENT_LETTER if language == "ENGLISH" else PORTUGUESE_MOST_FREQUENT_LETTER
-        shift = calculate_shift(
-            language_most_frequent_letter, text_most_frequent_letter)
-        key_letter = letter_in_alphabet(shift)
-        key_password += key_letter
+        language_most_frequent_letters = ENGLISH_MOST_FREQUENT_LETTERS if language == "ENGLISH" else PORTUGUESE_MOST_FREQUENT_LETTERS
+        if i == 0:
+            print(f"=> Considering the language's most frequent letters {language_most_frequent_letters} for performing the shifts")
+        shift_1 = calculate_shift(
+            language_most_frequent_letters[0], text_most_frequent_letter)
+        shift_2 = calculate_shift(
+            language_most_frequent_letters[1], text_most_frequent_letter)
+        key_1_letter = letter_in_alphabet(shift_1)
+        key_2_letter = letter_in_alphabet(shift_2)
+        possible_key_passwords[0] += key_1_letter
+        possible_key_passwords[1] += key_2_letter
         print(
-            f"=> For Sub-Text {i + 1}, Most Frequent Letter = {text_most_frequent_letter}, Shift = {shift}")
+            f"=> For Sub-Text {i + 1}, Most Frequent Letter = {text_most_frequent_letter}, Shift = {shift_1} or {shift_2}")
 
-        # Decrypt the sub-text using the key letter.
+        # Decrypt the sub-text using the key letters.
         decrypted_text = ""
         for letter in text:
-            correct_letter_position = calculate_shift(key_letter, letter)
+            correct_letter_position = calculate_shift(key_1_letter, letter)
             decrypted_text += letter_in_alphabet(correct_letter_position)
-        decrypted_texts.append(decrypted_text)
-    print(f"=> The key password is '{key_password}'")
+        decrypted_texts_1.append(decrypted_text)
+
+        decrypted_text = ""
+        for letter in text:
+            correct_letter_position = calculate_shift(key_2_letter, letter)
+            decrypted_text += letter_in_alphabet(correct_letter_position)
+        decrypted_texts_2.append(decrypted_text)
+    print(f"=> The key password could be '{possible_key_passwords[0]}' or '{possible_key_passwords[1]}'")
 
     # Join the decrypted sub-texts into a single text.
-    decrypted_text = join_text(decrypted_texts, key_length)
+    decrypted_text_1 = join_text(decrypted_texts_1, key_length)
+    decrypted_text_2 = join_text(decrypted_texts_2, key_length)
 
-    # Save the decrypted text to a file.
-    file_writer = open("decrypted.txt", "w")
-    file_writer.write(decrypted_text)
+    # Save the decrypted texts to a file.
+    # If folder 'decrypted' does not exist, create it.
+    if not os.path.exists("decrypted"):
+        os.makedirs("decrypted")
+    
+    file_writer = open("decrypted/decrypted_1.txt", "w")
+    file_writer.write(decrypted_text_1)
+    file_writer.close()
+    file_writer = open("decrypted/decrypted_2.txt", "w")
+    file_writer.write(decrypted_text_2)
     file_writer.close()
     print("=" * 166)
-    print(f"=> The decrypted text has been saved to 'decrypted.txt'")
+    print(f"=> The decrypted texts have been saved to the 'decrypted' folder")
+    print(f"=> The file 'decrypted_1.txt' contains the decrypted text using the key '{possible_key_passwords[0]}'")
+    print(f"=> The file 'decrypted_2.txt' contains the decrypted text using the key '{possible_key_passwords[1]}'")
 
 
 # Entry point of the program.
