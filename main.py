@@ -29,7 +29,7 @@ def is_text_english(letters_map: dict[str, int]) -> bool:
     # Check if the most frequent letter is close to the E letter.
     # Check if the second most frequent letter is close to the T letter.
     # If so, the text is likely to be English.
-    if abs(letters_map[most_frequent_letter] / total_letters - 0.127) < 0.03 and abs(letters_map[second_most_frequent_letter] / total_letters - 0.0905) < 0.03:
+    if abs(letters_map[most_frequent_letter] / total_letters - 0.127) < 0.01 and abs(letters_map[second_most_frequent_letter] / total_letters - 0.0905) < 0.01:
         return True
 
 
@@ -61,7 +61,7 @@ def is_text_portuguese(letters_map: dict[str, int]) -> bool:
     # Check if the most frequent letter is close to the A letter.
     # Check if the second most frequent letter is close to the E letter.
     # If so, the text is likely to be Portuguese.
-    if abs(letters_map[most_frequent_letter] / total_letters - 0.1463) < 0.03 and abs(letters_map[second_most_frequent_letter] / total_letters - 0.1257) < 0.03:
+    if abs(letters_map[most_frequent_letter] / total_letters - 0.1463) < 0.01 and abs(letters_map[second_most_frequent_letter] / total_letters - 0.1257) < 0.01:
         return True
 
 
@@ -227,7 +227,7 @@ def main():
     print("=" * 70 + " FIRST STEP [KEY LENGTH] " + "=" * 70)
 
     # Reading the encrypted text file.
-    file_path = "encrypted/cipher9.txt"
+    file_path = "portuguese.txt"
     file_reader = open(file_path, "r")
     encrypted_text = file_reader.read()
     file_reader.close()
