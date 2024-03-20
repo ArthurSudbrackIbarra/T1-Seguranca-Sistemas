@@ -1,5 +1,5 @@
 import os
-from itertools import product
+from shutil import rmtree
 
 # Constant representing the typical index of coincidence for English and Portuguese texts.
 ENGLISH_COINCIDENCE_INDEX = 0.066
@@ -254,10 +254,11 @@ def string_combinations(str1: str, str2: str) -> list:
 
 # Main function.
 def main():
+    file_path = "encrypted/" + input("Enter the name of the encrypted text file (inside the 'encrypted' folder): ")
+
     print("=" * 70 + " FIRST STEP [KEY LENGTH] " + "=" * 70)
 
     # Reading the encrypted text file.
-    file_path = "encrypted/" + input("Enter the name of the encrypted text file (inside the 'encrypted' folder): ")
     if not file_path.endswith(".txt"):
         file_path += ".txt"
     file_reader = open(file_path, "r")
@@ -329,13 +330,18 @@ def main():
     possible_passwords = string_combinations(
         password_by_shifting_all_by_most_frequent_letter, password_by_shifting_all_by_second_most_frequent_letter)
     possible_passwords.reverse()
-    print(f"=> The key password is likely to be one of the following: {possible_passwords}")
+    print(f"=> We are assuming that the most frequent letter in each sub-text is either the first or the second most frequent letter in the {str.lower(language)} language")
+    print(f"==> Key password assuming that all sub-texts most frequent letters are mapped to '{language_most_frequent_letters[0]}': '{password_by_shifting_all_by_most_frequent_letter}'")
+    print(f"==> Key password assuming that all sub-texts most frequent letters are mapped to '{language_most_frequent_letters[1]}': '{password_by_shifting_all_by_second_most_frequent_letter}'")
+    print(f"==> By permutating these two key passwords, we get a total of {len(possible_passwords)} possible key passwords")
+    print(f"==> The possible key passwords are: {possible_passwords}")
 
     # Decrypt the text using the possible key passwords.
     # Save each decrypted text to a file.
     print("=" * 70 + " THIRD STEP [DECRYPTED TEXT] " + "=" * 68)
-    if not os.path.exists("decrypted"):
-        os.makedirs("decrypted")
+    if os.path.exists("decrypted"):
+        rmtree("decrypted")
+    os.makedirs("decrypted")
     for password in possible_passwords:
         decrypted_text = ""
         for i, letter in enumerate(encrypted_text):
@@ -346,7 +352,8 @@ def main():
         file_writer.write(decrypted_text)
         file_writer.close()
         print(f"=> Decrypted text using key password '{password}' saved to '{save_path}'")
-
+    print("=> All possible decrypted texts saved to the 'decrypted' folder")
+    print("=" * 70 + " END " + "=" * 85)
 
 # Entry point of the program.
 if __name__ == "__main__":
