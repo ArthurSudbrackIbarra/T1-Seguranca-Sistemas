@@ -347,6 +347,16 @@ def main():
     if os.path.exists("decrypted"):
         rmtree("decrypted")
     os.makedirs("decrypted")
+
+    # Ask the user if they want to use a specific key password from the list
+    # or if they want to use all possible key passwords to decrypt the text.
+    choice = input("Do you want to use a specific key password from the list [1] or try all possible key passwords to decrypt the text [2]? ")
+    if choice == "1":
+        password = input("Enter the key password you want to use: ")
+        while password not in possible_passwords:
+            password = input("The key password you entered is not in the list. Please enter a valid key password: ")
+        possible_passwords = [password]
+
     for password in possible_passwords:
         decrypted_text = ""
         for i, letter in enumerate(encrypted_text):
@@ -357,7 +367,6 @@ def main():
         file_writer.write(decrypted_text)
         file_writer.close()
         print(f"=> Decrypted text using key password '{password}' saved to '{save_path}'")
-    print("=> All possible decrypted texts saved to the 'decrypted' folder")
     print("=" * 70 + " END " + "=" * 92)
 
 # Entry point of the program.
